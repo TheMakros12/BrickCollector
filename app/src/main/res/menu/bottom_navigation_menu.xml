@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/navigation_buscar"
+        android:title="@string/txtNavigationBuscar"
+        android:icon="@drawable/ic_buscar_legos"
+        />
+
+    <item
+        android:id="@+id/navigation_mis_legos"
+        android:title="@string/txtNavigationMisLegos"
+        android:icon="@drawable/ic_mis_legos"
+        />
+
+    <item
+        android:id="@+id/navigation_perfil"
+        android:title="@string/txtNavigationPerfil"
+        android:icon="@drawable/ic_perfil"
+        />
+
+</menu>

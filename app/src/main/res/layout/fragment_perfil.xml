@@ -1,0 +1,237 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context=".fragments.PerfilFragment">
+
+    <ImageView
+        android:id="@+id/ivLegoPerfil"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/heightIvLego"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:src="@drawable/lego_perfil"
+        android:contentDescription="@string/txtContentDescriptionIvLego"
+        />
+
+    <Space
+        android:id="@+id/space0"
+        android:layout_width="match_parent"
+        android:layout_height="36dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/ivLegoPerfil"
+        app:layout_constraintEnd_toEndOf="parent"
+        />
+
+    <ImageView
+        android:id="@+id/imgPerfilUser"
+        android:layout_width="@dimen/imgPerfilUser"
+        android:layout_height="@dimen/imgPerfilUser"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/space0"
+        android:layout_marginStart="10dp"
+        android:src="@drawable/chico"
+        android:contentDescription="@string/txtContDescrImgCardView"
+        />
+
+    <TextView
+        android:id="@+id/tvNombre"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toEndOf="@id/imgPerfilUser"
+        app:layout_constraintTop_toBottomOf="@id/space0"
+        android:layout_marginStart="10dp"
+        android:text="@string/txtTvNombre"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        />
+
+    <TextView
+        android:id="@+id/tvInfoNombre"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toEndOf="@id/imgPerfilUser"
+        app:layout_constraintTop_toBottomOf="@id/tvNombre"
+        android:layout_marginStart="10dp"
+        android:text="@string/txtTvInfoNombre"
+        android:textSize="18sp"
+        />
+
+    <TextView
+        android:id="@+id/tvEmail"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toEndOf="@id/imgPerfilUser"
+        app:layout_constraintTop_toBottomOf="@id/tvInfoNombre"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="10dp"
+        android:text="@string/txtTvEmail"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        />
+
+    <TextView
+        android:id="@+id/tvInfoEmail"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toEndOf="@id/imgPerfilUser"
+        app:layout_constraintTop_toBottomOf="@id/tvEmail"
+        android:layout_marginStart="10dp"
+        android:text="@string/txtTvInfoEmail"
+        android:textSize="18sp"
+        />
+
+    <Space
+        android:id="@+id/space1"
+        android:layout_width="match_parent"
+        android:layout_height="36dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/imgPerfilUser"
+        app:layout_constraintEnd_toEndOf="parent"
+        />
+
+    <TextView
+        android:id="@+id/tvTuColeccion"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/space1"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:text="@string/txtTvTuColeccion"
+        android:gravity="center"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        />
+
+    <TextView
+        android:id="@+id/tvTotalSets"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tvTuColeccion"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="10dp"
+        android:text="@string/txtTvTotalSets"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        />
+
+    <TextView
+        android:id="@+id/tvTotalSetsInfo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tvTotalSets"
+        android:layout_marginStart="10dp"
+        android:text="@string/txtTvTotalSetsInfo"
+        android:textSize="18sp"
+        />
+
+    <TextView
+        android:id="@+id/tvSets"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toEndOf="@id/tvTotalSetsInfo"
+        app:layout_constraintTop_toBottomOf="@id/tvTotalSets"
+        android:text="@string/txtTvSets"
+        android:textSize="18sp"
+        />
+
+    <TextView
+        android:id="@+id/tvTotalPiezas"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tvTotalSetsInfo"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="10dp"
+        android:text="@string/txtTvTotalPiezas"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        />
+
+    <TextView
+        android:id="@+id/tvTotalPiezasInfo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tvTotalPiezas"
+        android:layout_marginStart="10dp"
+        android:text="@string/txtTvTotalPiezasInfo"
+        android:textSize="18sp"
+        />
+
+    <TextView
+        android:id="@+id/tvPiezas"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toEndOf="@id/tvTotalPiezasInfo"
+        app:layout_constraintTop_toBottomOf="@id/tvTotalPiezas"
+        android:text="@string/txtTvPiezas"
+        android:textSize="18sp"
+        />
+
+    <Space
+        android:id="@+id/space2"
+        android:layout_width="match_parent"
+        android:layout_height="24dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tvTotalPiezasInfo"
+        app:layout_constraintEnd_toEndOf="parent"
+        />
+
+    <TextView
+        android:id="@+id/tvBorrarDatos"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/space2"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:text="@string/txtTvBorrarDatos"
+        android:gravity="center"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        />
+
+    <EditText
+        android:id="@+id/etBorrarLego"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tvBorrarDatos"
+        app:layout_constraintEnd_toStartOf="@id/btnBorrarLego"
+        android:layout_marginStart="10dp"
+        android:inputType="number"
+        android:hint="@string/txtHintEtBorrarLego"
+        android:autofillHints="name"
+        />
+
+    <Button
+        android:id="@+id/btnBorrarLego"
+        android:layout_width="140dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toEndOf="@id/etBorrarLego"
+        app:layout_constraintTop_toBottomOf="@id/tvBorrarDatos"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginStart="10dp"
+        android:layout_marginEnd="10dp"
+        android:text="@string/txtBtnBorrarLego"
+        style="@style/AppButtonStyle"
+        />
+
+    <Button
+        android:id="@+id/btnBorrarTodosLosLegos"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/etBorrarLego"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginHorizontal="10dp"
+        android:text="@string/txtBtnBorrarTodosLosLegos"
+        style="@style/AppButtonStyle"
+        />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

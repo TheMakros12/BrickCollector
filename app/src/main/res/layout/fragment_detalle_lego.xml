@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:padding="20dp">
+
+    <ImageView
+        android:id="@+id/ivLogoLego"
+        android:layout_width="@dimen/ivLegoMain"
+        android:layout_height="@dimen/ivLegoMain"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:src="@drawable/ic_lego"
+        android:contentDescription="@string/txtContentDescriptionIvLego"
+        />
+
+    <TextView
+        android:id="@+id/tvInfoLego"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toEndOf="@id/ivLogoLego"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/ivImgLego"
+        android:text="@string/txtTvInfoLego"
+        android:layout_marginBottom="15dp"
+        android:layout_marginStart="10dp"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        />
+
+    <ImageView
+        android:id="@+id/ivImgLego"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/heightIvLegoDetalle"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/ivLogoLego"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="15dp"
+        android:src="@color/cardview_dark_background"
+        android:contentDescription="@string/txtContentDescriptionIvLego"
+        />
+
+    <TextView
+        android:id="@+id/tvIdLego"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/ivImgLego"
+        android:layout_marginTop="10dp"
+        android:text="@string/txtTvIdLego"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        />
+
+    <TextView
+        android:id="@+id/tvPiezasLego"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/ivImgLego"
+        android:layout_marginTop="10dp"
+        android:text="@string/txtTvPiezasLego"
+        android:textSize="16sp"
+        />
+
+    <TextView
+        android:id="@+id/tvNombreLego"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tvIdLego"
+        android:layout_marginTop="15dp"
+        android:text="@string/txtTvNombreDelLego"
+        android:textSize="16sp"
+        />
+
+    <TextView
+        android:id="@+id/tvAnyoSalida"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tvNombreLego"
+        android:layout_marginTop="10dp"
+        android:text="@string/txtTvAnyoSalida"
+        android:textSize="16sp"
+        />
+
+    <TextView
+        android:id="@+id/tvAnyoSalidaInfo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toEndOf="@id/tvAnyoSalida"
+        app:layout_constraintTop_toBottomOf="@id/tvNombreLego"
+        app:layout_constraintBottom_toTopOf="@id/btnPaginaWeb"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="10dp"
+        android:text="@string/txtTvAnyoSalidaInfo"
+        android:textSize="16sp"
+        />
+
+    <TextView
+        android:id="@+id/tvPrecioEstimado"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toTopOf="@id/btnPaginaWeb"
+        app:layout_constraintEnd_toStartOf="@id/tvPrecioEstimadoInfo"
+        android:layout_marginBottom="10dp"
+        android:text="@string/txtTvPrecioEstimado"
+        android:textSize="16sp"
+        />
+
+    <TextView
+        android:id="@+id/tvPrecioEstimadoInfo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toTopOf="@id/btnPaginaWeb"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginBottom="10dp"
+        android:text="@string/txtTvPrecioEstimadoInfo"
+        android:textSize="16sp"
+        />
+
+    <Button
+        android:id="@+id/btnPaginaWeb"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/tvAnyoSalida"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:text="@string/txtBtnVisitarWeb"
+        style="@style/AppButtonStyle"
+        android:layout_marginTop="10dp"
+        />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
