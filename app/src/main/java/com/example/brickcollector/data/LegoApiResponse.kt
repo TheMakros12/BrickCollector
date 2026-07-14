@@ -18,5 +18,10 @@ data class LegoResponse(
     val year: Int,
     val set_url: String,
     val isWishlist: Boolean = false,
-    val retail_price: Double? = null
+    val retail_price: Double? = null,
+    val isBuilding: Boolean = false,
+    val currentBag: Int = 0,
+    val totalBags: Int = 0,
+    val startDate: Long? = null,
+    val endDate: Long? = null
 )

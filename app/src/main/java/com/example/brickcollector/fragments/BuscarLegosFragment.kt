@@ -40,18 +40,6 @@ class BuscarLegosFragment : Fragment() {
         "Pokemon" to 776
     )
 
-    private val localThemesMap = mapOf(
-        1 to "Technic",
-        601 to "Speed Champions",
-        721 to "Icons",
-        171 to "Star Wars",
-        769 to "Botanicals",
-        702 to "Marvel",
-        785 to "Nike",
-        781 to "The Infinity Saga",
-        776 to "Pokemon"
-    )
-
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -138,7 +126,7 @@ class BuscarLegosFragment : Fragment() {
             try {
                 val response = RetrofitInstance.api.getThemes()
                 val apiThemes = response.results.associate { it.id to it.name }
-                themes = apiThemes + localThemesMap
+                themes = apiThemes + com.example.brickcollector.data.AppConstants.localThemesMap
                 onLoaded()
             } catch (e: Exception) {
                 Toast.makeText(requireContext(), "Error cargando categorías", Toast.LENGTH_SHORT).show()
@@ -150,12 +138,15 @@ class BuscarLegosFragment : Fragment() {
         val firstThemeId = themesId[categorias[0]] ?: return
 
         lifecycleScope.launch {
+            mostrarShimmer()
             try {
                 val response = getSetsConHijos(firstThemeId)
                 legoAdapter.setItems(response.results)
                 actualizarListadoSavedState()
             } catch (e: Exception) {
                 Toast.makeText(requireContext(), "Error cargando sets", Toast.LENGTH_SHORT).show()
+            } finally {
+                ocultarShimmer()
             }
         }
     }
@@ -174,12 +165,15 @@ class BuscarLegosFragment : Fragment() {
                     val themeId = themesId[selected] ?: return
 
                     lifecycleScope.launch {
+                        mostrarShimmer()
                         try {
                             val response = getSetsConHijos(themeId)
                             legoAdapter.setItems(response.results)
                             actualizarListadoSavedState()
                         } catch (e: Exception) {
                             Toast.makeText(requireContext(), "Error en la API", Toast.LENGTH_SHORT).show()
+                        } finally {
+                            ocultarShimmer()
                         }
                     }
                 }
@@ -280,6 +274,7 @@ class BuscarLegosFragment : Fragment() {
 
     private fun buscarSetsPorNombre(query: String) {
         lifecycleScope.launch {
+            mostrarShimmer()
             try {
                 val response = RetrofitInstance.api.getSets(search = query)
                 if (response.results.isEmpty()) {
@@ -291,6 +286,8 @@ class BuscarLegosFragment : Fragment() {
             } catch (e: Exception) {
                 Toast.makeText(requireContext(), "Error buscando sets", Toast.LENGTH_SHORT).show()
                 Log.e("BuscarSets", "Error", e)
+            } finally {
+                ocultarShimmer()
             }
         }
     }
@@ -317,4 +314,17 @@ class BuscarLegosFragment : Fragment() {
         val realPrice = obtenerPrecioRealBrickset(setNum)
         return realPrice ?: com.example.brickcollector.data.CalculadoraPrecios.calcularPrecioDouble(numParts)
     }
+
+    private fun mostrarShimmer() {
+        binding.shimmerBuscar.visibility = View.VISIBLE
+        binding.shimmerBuscar.startShimmer()
+        binding.recylerViewLegos.visibility = View.INVISIBLE
+    }
+
+    private fun ocultarShimmer() {
+        binding.shimmerBuscar.stopShimmer()
+        binding.shimmerBuscar.visibility = View.GONE
+        binding.recylerViewLegos.visibility = View.VISIBLE
+    }
 }
+

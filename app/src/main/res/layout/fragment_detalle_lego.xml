@@ -166,11 +166,143 @@
 
     </LinearLayout>
 
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/cardBuildTracker"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/layoutMetaInfo"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="5dp"
+        android:layout_marginBottom="15dp"
+        app:cardCornerRadius="12dp"
+        app:cardElevation="0dp"
+        app:cardBackgroundColor="@color/lego_surface_card"
+        app:strokeWidth="1dp"
+        app:strokeColor="@color/lego_card_stroke"
+        android:visibility="gone">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp">
+
+            <com.google.android.material.switchmaterial.SwitchMaterial
+                android:id="@+id/switchBuilding"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="En Construcción"
+                android:textColor="@color/white"
+                android:textSize="16sp"
+                android:textStyle="bold" />
+
+            <LinearLayout
+                android:id="@+id/layoutBuildProgress"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:layout_marginTop="12dp"
+                android:visibility="gone">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Bolsa"
+                    android:textColor="@color/text_gray"
+                    android:textSize="16sp"
+                    android:layout_marginEnd="12dp" />
+
+                <Button
+                    android:id="@+id/btnBagMinus"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:text="-"
+                    android:textSize="20sp"
+                    android:padding="0dp"
+                    app:backgroundTint="@color/lego_dark_bg" />
+
+                <TextView
+                    android:id="@+id/tvCurrentBag"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="0"
+                    android:textColor="@color/lego_yellow"
+                    android:textSize="20sp"
+                    android:textStyle="bold"
+                    android:layout_marginHorizontal="16dp" />
+
+                <Button
+                    android:id="@+id/btnBagPlus"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:text="+"
+                    android:textSize="20sp"
+                    android:padding="0dp"
+                    app:backgroundTint="@color/lego_dark_bg" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="de"
+                    android:textColor="@color/text_gray"
+                    android:textSize="16sp"
+                    android:layout_marginHorizontal="12dp" />
+
+                <EditText
+                    android:id="@+id/etTotalBags"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="wrap_content"
+                    android:inputType="number"
+                    android:hint="Total"
+                    android:textColor="@color/white"
+                    android:textColorHint="@color/text_gray"
+                    android:textSize="16sp"
+                    android:textAlignment="center"
+                    android:background="@android:color/transparent"
+                    android:autofillHints="" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/layoutBuildDates"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_marginTop="8dp"
+                android:visibility="gone">
+
+                <TextView
+                    android:id="@+id/tvStartDate"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Iniciado el: "
+                    android:textColor="@color/text_gray"
+                    android:textSize="14sp" />
+
+                <TextView
+                    android:id="@+id/tvEndDate"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Finalizado el: "
+                    android:textColor="@color/text_gray"
+                    android:textSize="14sp"
+                    android:layout_marginTop="4dp"
+                    android:visibility="gone" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+    </com.google.android.material.card.MaterialCardView>
+
     <Button
         android:id="@+id/btnPaginaWeb"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:layout_constraintTop_toBottomOf="@id/layoutMetaInfo"
+        app:layout_constraintTop_toBottomOf="@id/cardBuildTracker"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

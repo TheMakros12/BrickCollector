@@ -64,26 +64,10 @@ class PerfilFragment : Fragment() {
 
         cargarTotales()
 
-        binding.btnBorrarLego.setOnClickListener {
-            mostrarDialogoDelete()
-        }
-
         binding.btnBorrarTodosLosLegos.setOnClickListener {
             mostrarDialogoDeleteAll()
         }
     }
-
-    private val localThemesMap = mapOf(
-        1 to "Technic",
-        601 to "Speed Champions",
-        721 to "Icons",
-        171 to "Star Wars",
-        769 to "Botanicals",
-        702 to "Marvel",
-        785 to "Nike",
-        781 to "The Infinity Saga",
-        776 to "Pokemon"
-    )
 
     private fun cargarTotales() {
         lifecycleScope.launch {
@@ -95,8 +79,8 @@ class PerfilFragment : Fragment() {
                 binding.tvTotalSetsInfo.text =  totalSets.toString()
                 binding.tvTotalPiezasInfo.text = totalPiezas.toString()
 
-                // Calculate total collection value
-                val totalVal = allLegos.sumOf { CalculadoraPrecios.calcularPrecioDouble(it.num_parts) }
+                // Calculate total collection value (real Brickset price if available, estimator as fallback)
+                val totalVal = allLegos.sumOf { it.retail_price ?: CalculadoraPrecios.calcularPrecioDouble(it.num_parts) }
                 binding.tvValorVitrinaInfo.text = String.format("%.2f€", totalVal)
 
                 calcularEstadisticas(allLegos)
@@ -155,7 +139,7 @@ class PerfilFragment : Fragment() {
 
             if (i < distribution.size) {
                 val (themeId, count) = distribution[i]
-                val name = localThemesMap[themeId] ?: "Tema ($themeId)"
+                val name = com.example.brickcollector.data.AppConstants.localThemesMap[themeId] ?: "Tema ($themeId)"
 
                 rowLayout.visibility = View.VISIBLE
                 tvName.text = name
@@ -181,41 +165,6 @@ class PerfilFragment : Fragment() {
                         .setPositiveButton("Eliminar") { _, _ ->
                             lifecycleScope.launch {
                                 val deleted = LegoApplication.database.legoDao().deleteAllSets()
-                                Toast.makeText(requireContext(), "Se han eliminado $deleted sets", Toast.LENGTH_SHORT).show()
-                                cargarTotales()
-                            }
-                        }
-                        .setNegativeButton("Cancelar", null)
-                        .setIcon(R.drawable.ic_lego)
-                        .show()
-                } else {
-                    Toast.makeText(requireContext(), "No hay datos guardados!!!", Toast.LENGTH_SHORT).show()
-                }
-            } catch (e: Exception) {
-                Toast.makeText(requireContext(), "Error cargando totales", Toast.LENGTH_SHORT).show()
-            }
-        }
-    }
-
-    private fun mostrarDialogoDelete() {
-        lifecycleScope.launch {
-            try {
-                val totalSets = LegoApplication.database.legoDao().getTotalSets()
-
-                if (totalSets > 0) {
-                    val input = binding.etBorrarLego.text.toString().trim()
-                    if (input.isEmpty()) {
-                        Toast.makeText(requireContext(), "Debes introducir un ID!!!", Toast.LENGTH_SHORT).show()
-                        return@launch
-                    }
-                    val id = if (input.contains("-")) input else "$input-1"
-
-                    AlertDialog.Builder(requireContext())
-                        .setTitle("Eliminar set con Id: $id")
-                        .setMessage("Esta acción eliminará el set $id. ¿Deseas continuar?")
-                        .setPositiveButton("Eliminar") { _, _ ->
-                            lifecycleScope.launch {
-                                val deleted = LegoApplication.database.legoDao().deleteSetById(id)
                                 Toast.makeText(requireContext(), "Se han eliminado $deleted sets", Toast.LENGTH_SHORT).show()
                                 cargarTotales()
                             }

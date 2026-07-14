@@ -4,6 +4,7 @@ import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.example.brickcollector.R
 import com.example.brickcollector.data.LegoResponse
@@ -116,9 +117,23 @@ class LegoAdapter(private val legos: MutableList<LegoResponse>,
     }
 
     fun setItems(nuevosLegos: List<LegoResponse>) {
+        val diffCallback = LegoDiffCallback(legos.toList(), nuevosLegos)
+        val diffResult = DiffUtil.calculateDiff(diffCallback)
         legos.clear()
         legos.addAll(nuevosLegos)
-        notifyDataSetChanged()
+        diffResult.dispatchUpdatesTo(this)
+    }
+
+    private class LegoDiffCallback(
+        private val oldList: List<LegoResponse>,
+        private val newList: List<LegoResponse>
+    ) : DiffUtil.Callback() {
+        override fun getOldListSize() = oldList.size
+        override fun getNewListSize() = newList.size
+        override fun areItemsTheSame(oldPos: Int, newPos: Int) =
+            oldList[oldPos].set_num == newList[newPos].set_num
+        override fun areContentsTheSame(oldPos: Int, newPos: Int) =
+            oldList[oldPos] == newList[newPos]
     }
 
 }

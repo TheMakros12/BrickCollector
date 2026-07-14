@@ -1,6 +1,9 @@
 package com.example.brickcollector.fragments
 
+import android.graphics.Canvas
 import android.graphics.Color
+import android.graphics.Paint
+import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
@@ -10,11 +13,16 @@ import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
+import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.example.brickcollector.R
 import com.example.brickcollector.adapters.LegosGuardadosAdapter
 import com.example.brickcollector.api.RetrofitInstance
+import com.example.brickcollector.data.CalculadoraPrecios
 import com.example.brickcollector.data.LegoResponse
 import com.example.brickcollector.database.LegoApplication
 import com.example.brickcollector.databinding.FragmentMisLegosBinding
@@ -31,18 +39,7 @@ class MisLegosFragment : Fragment() {
     private lateinit var adapter: LegosGuardadosAdapter
     private var isShowingWishlist: Boolean = false
     private var originalLegosList: List<LegoResponse> = emptyList()
-    private val localThemesMap = mapOf(
-        1 to "Technic",
-        601 to "Speed Champions",
-        721 to "Icons",
-        171 to "Star Wars",
-        769 to "Botanicals",
-        702 to "Marvel",
-        785 to "Nike",
-        781 to "The Infinity Saga",
-        776 to "Pokemon"
-    )
-
+    private var currentSortMode = 0
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -83,6 +80,10 @@ class MisLegosFragment : Fragment() {
             }
             override fun afterTextChanged(s: android.text.Editable?) {}
         })
+
+        binding.fabSort.setOnClickListener {
+            mostrarDialogoOrdenacion()
+        }
 
         cargarThemesYSpinner()
     }
@@ -125,7 +126,7 @@ class MisLegosFragment : Fragment() {
 
                 themeIdsOrdered = categoriasUnicas
                 spinnerItems = themeIdsOrdered.map { id ->
-                    themesMap[id] ?: localThemesMap[id] ?: "Tema desconodico ($id)"
+                    themesMap[id] ?: com.example.brickcollector.data.AppConstants.localThemesMap[id] ?: "Tema desconodico ($id)"
                 }
 
                 if (!::adapter.isInitialized) {
@@ -143,6 +144,7 @@ class MisLegosFragment : Fragment() {
                         }
                     )
                     binding.recylerViewLegos.adapter = adapter
+                    configurarSwipeToDelete()
                 }
 
                 cargarSpinner()
@@ -183,13 +185,18 @@ class MisLegosFragment : Fragment() {
                     binding.etSearchCollection.setText("")
 
                     lifecycleScope.launch {
-                        val legos = if (isShowingWishlist) {
-                            LegoApplication.database.legoDao().getWishlistLegosByTheme(themeId)
-                        } else {
-                            LegoApplication.database.legoDao().getLegosByTheme(themeId)
+                        mostrarShimmer()
+                        try {
+                            val legos = if (isShowingWishlist) {
+                                LegoApplication.database.legoDao().getWishlistLegosByTheme(themeId)
+                            } else {
+                                LegoApplication.database.legoDao().getLegosByTheme(themeId)
+                            }
+                            originalLegosList = legos
+                            filtrarYMostrarSets()
+                        } finally {
+                            ocultarShimmer()
                         }
-                        originalLegosList = legos
-                        adapter.setItems(legos)
                     }
                 }
 
@@ -317,13 +324,114 @@ class MisLegosFragment : Fragment() {
 
     private fun filtrarYMostrarSets() {
         val query = binding.etSearchCollection.text.toString().trim()
-        if (query.isEmpty()) {
-            adapter.setItems(originalLegosList)
+        val listaFiltrada = if (query.isEmpty()) {
+            originalLegosList
         } else {
-            val filtered = originalLegosList.filter {
+            originalLegosList.filter {
                 it.name.contains(query, ignoreCase = true) || it.set_num.contains(query, ignoreCase = true)
             }
-            adapter.setItems(filtered)
+        }
+        
+        val listaOrdenada = when (currentSortMode) {
+            1 -> listaFiltrada.sortedByDescending { it.num_parts }
+            2 -> listaFiltrada.sortedByDescending { it.retail_price ?: CalculadoraPrecios.calcularPrecioDouble(it.num_parts) }
+            3 -> listaFiltrada.sortedByDescending { it.year }
+            else -> listaFiltrada
+        }
+        
+        adapter.setItems(listaOrdenada)
+        if (listaOrdenada.isNotEmpty()) {
+            binding.recylerViewLegos.scrollToPosition(0)
         }
     }
+
+    private fun mostrarDialogoOrdenacion() {
+        val opciones = arrayOf("Por Defecto", "Mayor número de piezas", "Precio más alto", "Más recientes")
+        
+        AlertDialog.Builder(requireContext())
+            .setTitle("Ordenar por")
+            .setSingleChoiceItems(opciones, currentSortMode) { dialog, which ->
+                currentSortMode = which
+                filtrarYMostrarSets()
+                dialog.dismiss()
+            }
+            .setNegativeButton("Cancelar", null)
+            .show()
+    }
+
+    private fun configurarSwipeToDelete() {
+        val swipeCallback = object : ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT) {
+
+            private val background = ColorDrawable(Color.parseColor("#C0392B"))
+            private val trashIcon = ContextCompat.getDrawable(requireContext(), android.R.drawable.ic_menu_delete)
+
+            override fun onMove(rv: RecyclerView, vh: RecyclerView.ViewHolder, t: RecyclerView.ViewHolder) = false
+
+            override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
+                val position = viewHolder.adapterPosition
+                if (position == RecyclerView.NO_ID.toInt()) return
+                val lego = adapter.getLegos()[position]
+
+                AlertDialog.Builder(requireContext())
+                    .setTitle("Eliminar set")
+                    .setMessage("¿Seguro que quieres eliminar \"${lego.name}\" de tu colección?")
+                    .setPositiveButton("Eliminar") { _, _ ->
+                        mostrarDialogoConfirmacion(lego)
+                    }
+                    .setNegativeButton("Cancelar") { _, _ ->
+                        adapter.notifyItemChanged(position)
+                    }
+                    .setOnCancelListener {
+                        adapter.notifyItemChanged(position)
+                    }
+                    .setIcon(R.drawable.ic_lego)
+                    .show()
+            }
+
+            override fun onChildDraw(
+                c: Canvas, recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder,
+                dX: Float, dY: Float, actionState: Int, isCurrentlyActive: Boolean
+            ) {
+                val itemView = viewHolder.itemView
+                val iconMargin = (itemView.height - (trashIcon?.intrinsicHeight ?: 0)) / 2
+
+                // Draw red background
+                background.setBounds(
+                    itemView.right + dX.toInt(),
+                    itemView.top,
+                    itemView.right,
+                    itemView.bottom
+                )
+                background.draw(c)
+
+                // Draw trash icon
+                trashIcon?.let { icon ->
+                    val iconTop = itemView.top + iconMargin
+                    val iconLeft = itemView.right - iconMargin - icon.intrinsicWidth
+                    val iconRight = itemView.right - iconMargin
+                    val iconBottom = iconTop + icon.intrinsicHeight
+                    icon.setTint(Color.WHITE)
+                    icon.setBounds(iconLeft, iconTop, iconRight, iconBottom)
+                    icon.draw(c)
+                }
+
+                super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive)
+            }
+        }
+
+        ItemTouchHelper(swipeCallback).attachToRecyclerView(binding.recylerViewLegos)
+    }
+
+    private fun mostrarShimmer() {
+        binding.shimmerMisLegos.visibility = View.VISIBLE
+        binding.shimmerMisLegos.startShimmer()
+        binding.recylerViewLegos.visibility = View.INVISIBLE
+    }
+
+    private fun ocultarShimmer() {
+        binding.shimmerMisLegos.stopShimmer()
+        binding.shimmerMisLegos.visibility = View.GONE
+        binding.recylerViewLegos.visibility = View.VISIBLE
+    }
 }
+

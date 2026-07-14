@@ -4,18 +4,20 @@ import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.example.brickcollector.R
 import com.example.brickcollector.data.LegoResponse
 import com.example.brickcollector.databinding.ItemLegoGuardadoBinding
 import coil.load
 
-class LegosGuardadosAdapter(private val legos: MutableList<LegoResponse>,
-                            private val themes: Map<Int, String>,
-                            private val onBorrarClick: (LegoResponse) -> Unit,
-                            private val onLoTengoClick: (LegoResponse) -> Unit,
-                            private val onItemClick: (LegoResponse) -> Unit
-): RecyclerView.Adapter<LegosGuardadosAdapter.ViewHolder>() {
+class LegosGuardadosAdapter(
+    private val legos: MutableList<LegoResponse>,
+    private val themes: Map<Int, String>,
+    private val onBorrarClick: (LegoResponse) -> Unit,
+    private val onLoTengoClick: (LegoResponse) -> Unit,
+    private val onItemClick: (LegoResponse) -> Unit
+) : RecyclerView.Adapter<LegosGuardadosAdapter.ViewHolder>() {
 
     private lateinit var context: Context
     private var isWishlistMode: Boolean = false
@@ -25,19 +27,13 @@ class LegosGuardadosAdapter(private val legos: MutableList<LegoResponse>,
         notifyDataSetChanged()
     }
 
-    override fun onCreateViewHolder(
-        parent: ViewGroup,
-        viewType: Int
-    ): ViewHolder {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         context = parent.context
         val view = LayoutInflater.from(context).inflate(R.layout.item_lego_guardado, parent, false)
         return ViewHolder(view)
     }
 
-    override fun onBindViewHolder(
-        holder: ViewHolder,
-        position: Int
-    ) {
+    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val lego = legos[position]
         val themeName = themes[lego.theme_id] ?: "Categoría desconocida"
         val legoId = lego.set_num.split("-")[0]
@@ -52,33 +48,30 @@ class LegosGuardadosAdapter(private val legos: MutableList<LegoResponse>,
 
             if (isWishlistMode) {
                 binding.btnLoTengoLego.visibility = View.VISIBLE
-                binding.btnLoTengoLego.setOnClickListener {
-                    onLoTengoClick(lego)
-                }
+                binding.btnLoTengoLego.setOnClickListener { onLoTengoClick(lego) }
             } else {
                 binding.btnLoTengoLego.visibility = View.GONE
             }
 
-            binding.btnBorrarLego.setOnClickListener {
-                onBorrarClick(lego)
-            }
-
-            itemView.setOnClickListener {
-                onItemClick(lego)
-            }
+            binding.btnBorrarLego.setOnClickListener { onBorrarClick(lego) }
+            itemView.setOnClickListener { onItemClick(lego) }
         }
     }
 
     override fun getItemCount(): Int = legos.size
 
-    inner class ViewHolder(view: View): RecyclerView.ViewHolder(view) {
+    fun getLegos(): List<LegoResponse> = legos.toList()
+
+    inner class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val binding = ItemLegoGuardadoBinding.bind(view)
     }
 
     fun setItems(newLegos: List<LegoResponse>) {
+        val diffCallback = LegoDiffCallback(legos.toList(), newLegos)
+        val diffResult = DiffUtil.calculateDiff(diffCallback)
         legos.clear()
         legos.addAll(newLegos)
-        notifyDataSetChanged()
+        diffResult.dispatchUpdatesTo(this)
     }
 
     fun removeItem(lego: LegoResponse) {
@@ -94,4 +87,15 @@ class LegosGuardadosAdapter(private val legos: MutableList<LegoResponse>,
         notifyItemInserted(legos.size - 1)
     }
 
+    private class LegoDiffCallback(
+        private val oldList: List<LegoResponse>,
+        private val newList: List<LegoResponse>
+    ) : DiffUtil.Callback() {
+        override fun getOldListSize() = oldList.size
+        override fun getNewListSize() = newList.size
+        override fun areItemsTheSame(oldPos: Int, newPos: Int) =
+            oldList[oldPos].set_num == newList[newPos].set_num
+        override fun areContentsTheSame(oldPos: Int, newPos: Int) =
+            oldList[oldPos] == newList[newPos]
+    }
 }

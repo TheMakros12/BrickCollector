@@ -59,6 +59,9 @@ interface LegoDao {
     @Query("UPDATE legos SET isWishlist = 0 WHERE set_num = :setNum")
     suspend fun markAsOwned(setNum: String): Int
 
+    @Query("UPDATE legos SET isBuilding = :isBuilding, currentBag = :currentBag, totalBags = :totalBags, startDate = :startDate, endDate = :endDate WHERE set_num = :setNum")
+    suspend fun updateBuildProgress(setNum: String, isBuilding: Boolean, currentBag: Int, totalBags: Int, startDate: Long?, endDate: Long?)
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertThemes(themes: List<Theme>)
 
