@@ -16,7 +16,8 @@ import kotlinx.coroutines.launch
 
 class PiezasFragment : Fragment() {
 
-    private lateinit var binding: FragmentPiezasBinding
+    private var _binding: FragmentPiezasBinding? = null
+    private val binding get() = _binding!!
     private lateinit var setNum: String
     private lateinit var adapter: PiezasAdapter
 
@@ -29,8 +30,13 @@ class PiezasFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        binding = FragmentPiezasBinding.inflate(inflater, container, false)
+        _binding = FragmentPiezasBinding.inflate(inflater, container, false)
         return binding.root
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

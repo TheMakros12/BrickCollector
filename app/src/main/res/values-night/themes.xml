@@ -1,7 +1,23 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <!-- Base application theme. -->
-    <style name="Base.Theme.BrickCollector" parent="Theme.Material3.DayNight.NoActionBar">
-        <!-- Customize your dark theme here. -->
-        <!-- <item name="colorPrimary">@color/my_dark_primary</item> -->
+    <!-- Aligned night-theme using the same Base.Theme.BrickCollector parent -->
+    <style name="Base.Theme.BrickCollector" parent="Theme.Material3.Dark.NoActionBar">
+        <!-- Brand colors -->
+        <item name="colorPrimary">@color/lego_red</item>
+        <item name="colorSecondary">@color/lego_yellow</item>
+        <item name="android:windowBackground">@color/lego_dark_bg</item>
+
+        <!-- Surfaces -->
+        <item name="colorSurface">@color/lego_surface_card</item>
+        <item name="colorSurfaceVariant">@color/lego_surface_card</item>
+
+        <!-- Text / Contrast colors -->
+        <item name="colorOnSurface">@color/white</item>
+        <item name="colorOnSurfaceVariant">@color/text_gray</item>
+        <item name="android:textColorPrimary">@color/white</item>
+        <item name="android:textColorSecondary">@color/text_gray</item>
+
+        <!-- Font Family configurations -->
+        <item name="fontFamily">@font/outfit</item>
+        <item name="android:fontFamily">@font/outfit</item>
     </style>
 </resources>

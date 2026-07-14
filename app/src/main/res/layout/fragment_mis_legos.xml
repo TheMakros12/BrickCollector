@@ -9,15 +9,28 @@
 
     <TextView
         android:id="@+id/tvBuscarPorCategoria"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/btnCompartirWishlist"
         android:text="@string/txtTvBuscarPorCategoria"
         android:gravity="start"
         android:textSize="16sp"
         android:textStyle="bold"
+        />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnCompartirWishlist"
+        style="@style/Widget.Material3.Button.IconButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="@id/tvBuscarPorCategoria"
+        app:icon="@android:drawable/ic_menu_share"
+        app:iconTint="@color/lego_red"
+        android:visibility="gone"
         />
 
     <Spinner
@@ -27,17 +40,115 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/tvBuscarPorCategoria"
         app:layout_constraintEnd_toEndOf="parent"
+        android:popupBackground="@color/lego_surface_card"
         />
+
+    <com.google.android.material.button.MaterialButtonToggleGroup
+        android:id="@+id/toggleGroupCollection"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:singleSelection="true"
+        app:selectionRequired="true"
+        app:checkedButton="@id/btnTabOwned"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/spinnerCategorias"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="10dp"
+        >
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnTabOwned"
+            style="@style/Widget.Material3.Button.OutlinedButton"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Mi Vitrina"
+            />
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnTabWishlist"
+            style="@style/Widget.Material3.Button.OutlinedButton"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Lista de Deseos"
+            />
+    </com.google.android.material.button.MaterialButtonToggleGroup>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/tiSearchCollectionContainer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/toggleGroupCollection"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginHorizontal="20dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="5dp"
+        app:boxStrokeColor="@color/lego_card_stroke"
+        app:hintTextColor="@color/text_gray"
+        android:textColorHint="@color/text_gray"
+        style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+        app:startIconDrawable="@android:drawable/ic_menu_search"
+        app:startIconTint="@color/text_gray"
+        app:endIconMode="clear_text"
+        app:endIconTint="@color/text_gray"
+        >
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/etSearchCollection"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Buscar por nombre o ID..."
+            android:textColor="@color/white"
+            android:textSize="15sp"
+            android:inputType="text"
+            android:maxLines="1"
+            android:fontFamily="@font/outfit"
+            />
+    </com.google.android.material.textfield.TextInputLayout>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recylerViewLegos"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/spinnerCategorias"
+        app:layout_constraintTop_toBottomOf="@id/tiSearchCollectionContainer"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
         tools:listitem="@layout/item_lego_guardado"
         />
+
+    <LinearLayout
+        android:id="@+id/layoutEmptyState"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:gravity="center"
+        android:visibility="gone"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:padding="20dp"
+        >
+
+        <ImageView
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:src="@drawable/ic_lego"
+            android:contentDescription="@string/txtContentDescriptionIvLego"
+            />
+
+        <TextView
+            android:layout_width="260dp"
+            android:layout_height="wrap_content"
+            android:text="Tu vitrina está vacía.\nBusca tus sets favoritos y añádelos a tu colección."
+            android:gravity="center"
+            android:textSize="16sp"
+            android:textColor="@color/text_gray"
+            android:layout_marginTop="16dp"
+            />
+
+    </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

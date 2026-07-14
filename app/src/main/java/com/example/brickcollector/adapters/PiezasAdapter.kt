@@ -9,7 +9,7 @@ import com.example.brickcollector.R
 import com.example.brickcollector.data.PiezaResponse
 import com.example.brickcollector.data.PiezasResponse
 import com.example.brickcollector.databinding.ItemPiezaLegoBinding
-import com.squareup.picasso.Picasso
+import coil.load
 
 class PiezasAdapter(private val piezas: MutableList<PiezaResponse>) : RecyclerView.Adapter<PiezasAdapter.ViewHolder>() {
 
@@ -35,9 +35,7 @@ class PiezasAdapter(private val piezas: MutableList<PiezaResponse>) : RecyclerVi
             binding.tvNumPieza.text = pieza.part.part_num
             binding.tvPiezasLegoSet.text = numPiezas
 
-            Picasso.get()
-                .load(pieza.part.part_img_url)
-                .into(binding.imgItem)
+            binding.imgItem.load(pieza.part.part_img_url)
         }
     }
 

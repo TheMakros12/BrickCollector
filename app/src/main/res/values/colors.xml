@@ -2,9 +2,20 @@
 <resources>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
-    <color name="orange_primary">#FF9800</color>
-    <color name="orange_primary_dark">#F57C00</color>
     <color name="gray">#757575</color>
-    <color name="orange_ripple">#33FF9800</color>
     <color name="gray_ripple">#33000000</color>
+
+    <!-- Lego Collector's Edition Theme Colors -->
+    <color name="lego_red">#E3000B</color>
+    <color name="lego_red_dark">#B30009</color>
+    <color name="lego_yellow">#FFCF00</color>
+    <color name="lego_dark_bg">#121216</color>
+    <color name="lego_surface_card">#1E1E24</color>
+    <color name="lego_card_stroke">#33FFFFFF</color>
+    <color name="text_gray">#A0A0A5</color>
+
+    <!-- Map legacy colors to new theme to preserve app stability -->
+    <color name="orange_primary">@color/lego_red</color>
+    <color name="orange_primary_dark">@color/lego_red_dark</color>
+    <color name="orange_ripple">#33E3000B</color>
 </resources>

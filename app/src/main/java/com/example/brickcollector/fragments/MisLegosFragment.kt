@@ -23,11 +23,14 @@ import kotlinx.coroutines.launch
 
 class MisLegosFragment : Fragment() {
 
-    private lateinit var binding: FragmentMisLegosBinding
+    private var _binding: FragmentMisLegosBinding? = null
+    private val binding get() = _binding!!
     private var themesMap: Map<Int, String> = emptyMap()
     private lateinit var spinnerItems: List<String>
     private lateinit var themeIdsOrdered: List<Int>
     private lateinit var adapter: LegosGuardadosAdapter
+    private var isShowingWishlist: Boolean = false
+    private var originalLegosList: List<LegoResponse> = emptyList()
     private val localThemesMap = mapOf(
         1 to "Technic",
         601 to "Speed Champions",
@@ -44,29 +47,73 @@ class MisLegosFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        binding = FragmentMisLegosBinding.inflate(inflater, container, false)
+        _binding = FragmentMisLegosBinding.inflate(inflater, container, false)
         return binding.root
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding.recylerViewLegos.layoutManager = LinearLayoutManager(requireContext())
+
+        binding.toggleGroupCollection.addOnButtonCheckedListener { _, checkedId, isChecked ->
+            if (isChecked) {
+                isShowingWishlist = (checkedId == R.id.btnTabWishlist)
+                binding.btnCompartirWishlist.visibility = if (isShowingWishlist) View.VISIBLE else View.GONE
+                binding.etSearchCollection.setText("")
+                if (::adapter.isInitialized) {
+                    adapter.setWishlistMode(isShowingWishlist)
+                }
+                cargarThemesYSpinner()
+            }
+        }
+
+        binding.btnCompartirWishlist.setOnClickListener {
+            compartirWishlist()
+        }
+
+        binding.etSearchCollection.addTextChangedListener(object : android.text.TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                filtrarYMostrarSets()
+            }
+            override fun afterTextChanged(s: android.text.Editable?) {}
+        })
+
         cargarThemesYSpinner()
     }
 
     private fun cargarThemesYSpinner(themeIdToSelect: Int? = null) {
         lifecycleScope.launch {
             try {
-                val categoriasGuardadas =
+                val categoriasGuardadas = if (isShowingWishlist) {
+                    LegoApplication.database.legoDao().getWishlistThemeIds()
+                } else {
                     LegoApplication.database.legoDao().getSavedThemeIds()
+                }
 
                 if (categoriasGuardadas.isEmpty()) {
-                    Toast.makeText(requireContext(), "No tienes legos guardados", Toast.LENGTH_SHORT).show()
+                    binding.layoutEmptyState.visibility = View.VISIBLE
+                    binding.spinnerCategorias.visibility = View.GONE
+                    binding.tvBuscarPorCategoria.visibility = View.GONE
+                    binding.recylerViewLegos.visibility = View.GONE
+                    binding.tiSearchCollectionContainer.visibility = View.GONE
                     if (::adapter.isInitialized) {
                         adapter.setItems(emptyList())
                     }
+                    originalLegosList = emptyList()
                     binding.spinnerCategorias.adapter = null
                     return@launch
+                } else {
+                    binding.layoutEmptyState.visibility = View.GONE
+                    binding.spinnerCategorias.visibility = View.VISIBLE
+                    binding.tvBuscarPorCategoria.visibility = View.VISIBLE
+                    binding.recylerViewLegos.visibility = View.VISIBLE
+                    binding.tiSearchCollectionContainer.visibility = View.VISIBLE
                 }
 
                 val categoriasUnicas = categoriasGuardadas.distinct()
@@ -87,6 +134,9 @@ class MisLegosFragment : Fragment() {
                         themesMap,
                         onBorrarClick = { legoResponse ->
                             mostrarDialogoConfirmacion(legoResponse)
+                        },
+                        onLoTengoClick = { legoResponse ->
+                            marcarComoComprado(legoResponse)
                         },
                         onItemClick = { legoResponse ->
                             abrirPiezasFragment(legoResponse.set_num)
@@ -130,9 +180,15 @@ class MisLegosFragment : Fragment() {
                     id: Long
                 ) {
                     val themeId = themeIdsOrdered[position]
+                    binding.etSearchCollection.setText("")
 
                     lifecycleScope.launch {
-                        val legos = LegoApplication.database.legoDao().getLegosByTheme(themeId)
+                        val legos = if (isShowingWishlist) {
+                            LegoApplication.database.legoDao().getWishlistLegosByTheme(themeId)
+                        } else {
+                            LegoApplication.database.legoDao().getLegosByTheme(themeId)
+                        }
+                        originalLegosList = legos
                         adapter.setItems(legos)
                     }
                 }
@@ -206,8 +262,68 @@ class MisLegosFragment : Fragment() {
     private fun abrirPiezasFragment(setNum: String) {
         val fragment = PiezasFragment.newInstance(setNum)
         parentFragmentManager.beginTransaction()
+            .setCustomAnimations(
+                R.anim.slide_in,
+                R.anim.slide_out,
+                R.anim.slide_in_back,
+                R.anim.slide_out_back
+            )
             .replace(R.id.fragmentContainer, fragment)
             .addToBackStack(null)
             .commit()
+    }
+
+    private fun marcarComoComprado(lego: LegoResponse) {
+        lifecycleScope.launch {
+            try {
+                LegoApplication.database.legoDao().markAsOwned(lego.set_num)
+                Toast.makeText(requireContext(), "¡Felicidades! Se ha añadido a tu colección real", Toast.LENGTH_SHORT).show()
+                cargarThemesYSpinner()
+            } catch (e: Exception) {
+                Toast.makeText(requireContext(), "Error al actualizar estado", Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+
+    private fun compartirWishlist() {
+        lifecycleScope.launch {
+            try {
+                val wishlistLegos = LegoApplication.database.legoDao().getWishlistLegos()
+                if (wishlistLegos.isEmpty()) {
+                    Toast.makeText(requireContext(), "Tu lista de deseos está vacía", Toast.LENGTH_SHORT).show()
+                    return@launch
+                }
+
+                val sb = StringBuilder()
+                sb.append("🧱✨ ¡Hola! Estos son los sets de LEGO que me gustaría tener en mi colección:\n\n")
+                for (lego in wishlistLegos) {
+                    val code = lego.set_num.split("-")[0]
+                    sb.append("• ${lego.name} (Ref: $code)\n")
+                }
+                sb.append("\n¿Me ayudas a completar mi vitrina? 🎁")
+
+                val sendIntent = android.content.Intent().apply {
+                    action = android.content.Intent.ACTION_SEND
+                    putExtra(android.content.Intent.EXTRA_TEXT, sb.toString())
+                    type = "text/plain"
+                }
+                val shareIntent = android.content.Intent.createChooser(sendIntent, "Compartir Lista de Deseos")
+                startActivity(shareIntent)
+            } catch (e: Exception) {
+                Toast.makeText(requireContext(), "Error al compartir lista de deseos", Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+
+    private fun filtrarYMostrarSets() {
+        val query = binding.etSearchCollection.text.toString().trim()
+        if (query.isEmpty()) {
+            adapter.setItems(originalLegosList)
+        } else {
+            val filtered = originalLegosList.filter {
+                it.name.contains(query, ignoreCase = true) || it.set_num.contains(query, ignoreCase = true)
+            }
+            adapter.setItems(filtered)
+        }
     }
 }

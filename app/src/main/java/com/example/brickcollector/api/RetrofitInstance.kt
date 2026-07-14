@@ -12,6 +12,8 @@ object RetrofitInstance {
     private const val API_KEY =
         "f138411743940f84bc3cd94fbdc27848"
 
+    const val BRICKSET_API_KEY = "3-W4P3-9bW4"
+
     private val client = OkHttpClient.Builder()
         .addInterceptor { chain ->
             val request = chain.request().newBuilder()
@@ -28,6 +30,14 @@ object RetrofitInstance {
             .addConverterFactory(GsonConverterFactory.create())
             .build()
             .create(LegoApiServices::class.java)
+    }
+
+    val bricksetApi: BricksetApiServices by lazy {
+        Retrofit.Builder()
+            .baseUrl("https://brickset.com/")
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+            .create(BricksetApiServices::class.java)
     }
 
 }

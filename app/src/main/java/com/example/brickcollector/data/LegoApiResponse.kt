@@ -16,5 +16,7 @@ data class LegoResponse(
     val num_parts: Int,
     val set_img_url: String,
     val year: Int,
-    val set_url: String
+    val set_url: String,
+    val isWishlist: Boolean = false,
+    val retail_price: Double? = null
 )

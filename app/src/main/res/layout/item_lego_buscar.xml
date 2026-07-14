@@ -1,11 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     app:cardCornerRadius="16dp"
     app:cardElevation="4dp"
-    app:cardUseCompatPadding="true">
+    app:cardUseCompatPadding="true"
+    app:cardBackgroundColor="@color/lego_surface_card"
+    app:strokeColor="@color/lego_card_stroke"
+    app:strokeWidth="1dp">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
@@ -77,7 +80,24 @@
             android:textSize="16sp"
             />
 
-        <Button
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnWishlistLego"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/heghtBtnComprarLego"
+            app:layout_constraintEnd_toStartOf="@id/btnGuardarLego"
+            app:layout_constraintTop_toBottomOf="@id/tvPiezasLego"
+            app:layout_constraintBottom_toBottomOf="parent"
+            android:layout_marginTop="30dp"
+            android:layout_marginEnd="10dp"
+            android:layout_marginBottom="10dp"
+            android:text="Deseo"
+            style="@style/Widget.Material3.Button.OutlinedButton"
+            app:strokeColor="@color/text_gray"
+            app:strokeWidth="1dp"
+            android:textColor="@color/text_gray"
+            />
+
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/btnGuardarLego"
             android:layout_width="wrap_content"
             android:layout_height="@dimen/heghtBtnComprarLego"
@@ -93,4 +113,4 @@
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-</androidx.cardview.widget.CardView>
+</com.google.android.material.card.MaterialCardView>

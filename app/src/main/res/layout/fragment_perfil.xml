@@ -106,80 +106,396 @@
         android:textStyle="bold"
         />
 
-    <TextView
-        android:id="@+id/tvTotalSets"
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:id="@+id/layoutTotalsDashboard"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:layout_constraintStart_toStartOf="parent"
+        android:orientation="horizontal"
         app:layout_constraintTop_toBottomOf="@id/tvTuColeccion"
-        android:layout_marginStart="10dp"
-        android:layout_marginTop="10dp"
-        android:text="@string/txtTvTotalSets"
-        android:textSize="18sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="15dp"
+        android:layout_marginHorizontal="10dp"
+        android:weightSum="3"
+        android:divider="@drawable/divider_space"
+        android:showDividers="middle">
+
+        <!-- Card Sets -->
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            app:cardCornerRadius="12dp"
+            app:cardElevation="0dp"
+            app:cardBackgroundColor="@color/lego_surface_card"
+            app:strokeWidth="1dp"
+            app:strokeColor="@color/lego_card_stroke">
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:gravity="center"
+                android:padding="8dp">
+                <TextView
+                    android:id="@+id/tvTotalSetsInfo"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="0"
+                    android:textSize="18sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/white" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Sets"
+                    android:textSize="11sp"
+                    android:textColor="@color/text_gray"
+                    android:layout_marginTop="2dp" />
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- Card Pieces -->
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            app:cardCornerRadius="12dp"
+            app:cardElevation="0dp"
+            app:cardBackgroundColor="@color/lego_surface_card"
+            app:strokeWidth="1dp"
+            app:strokeColor="@color/lego_card_stroke">
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:gravity="center"
+                android:padding="8dp">
+                <TextView
+                    android:id="@+id/tvTotalPiezasInfo"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="0"
+                    android:textSize="18sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/white" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Piezas"
+                    android:textSize="11sp"
+                    android:textColor="@color/text_gray"
+                    android:layout_marginTop="2dp" />
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- Card Value -->
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            app:cardCornerRadius="12dp"
+            app:cardElevation="0dp"
+            app:cardBackgroundColor="@color/lego_surface_card"
+            app:strokeWidth="1dp"
+            app:strokeColor="@color/lego_card_stroke">
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:gravity="center"
+                android:padding="8dp">
+                <TextView
+                    android:id="@+id/tvValorVitrinaInfo"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="0.00€"
+                    android:textSize="18sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/lego_yellow" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Valor Est."
+                    android:textSize="11sp"
+                    android:textColor="@color/text_gray"
+                    android:layout_marginTop="2dp" />
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/tvTituloStats"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Distribución por Temas"
+        android:textSize="20sp"
         android:textStyle="bold"
-        />
-
-    <TextView
-        android:id="@+id/tvTotalSetsInfo"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:layout_marginTop="24dp"
+        app:layout_constraintTop_toBottomOf="@id/layoutTotalsDashboard"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/tvTotalSets"
-        android:layout_marginStart="10dp"
-        android:text="@string/txtTvTotalSetsInfo"
-        android:textSize="18sp"
+        app:layout_constraintEnd_toEndOf="parent"
         />
 
-    <TextView
-        android:id="@+id/tvSets"
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:id="@+id/layoutStats"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:layout_constraintStart_toEndOf="@id/tvTotalSetsInfo"
-        app:layout_constraintTop_toBottomOf="@id/tvTotalSets"
-        android:text="@string/txtTvSets"
-        android:textSize="18sp"
-        />
-
-    <TextView
-        android:id="@+id/tvTotalPiezas"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintTop_toBottomOf="@id/tvTituloStats"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/tvTotalSetsInfo"
-        android:layout_marginStart="10dp"
-        android:layout_marginTop="10dp"
-        android:text="@string/txtTvTotalPiezas"
-        android:textSize="18sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginHorizontal="20dp"
+        android:layout_marginTop="12dp"
+        android:divider="@drawable/divider_space"
+        android:showDividers="middle"
+        >
+
+        <!-- Row 1 -->
+        <LinearLayout
+            android:id="@+id/rowStat1"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:visibility="gone"
+            >
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                >
+                <TextView
+                    android:id="@+id/tvStatName1"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Technic"
+                    android:textColor="@color/white"
+                    android:textStyle="bold"
+                    />
+                <TextView
+                    android:id="@+id/tvStatCount1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="3 sets"
+                    android:textColor="@color/text_gray"
+                    />
+            </LinearLayout>
+            <ProgressBar
+                android:id="@+id/pbStat1"
+                style="@android:style/Widget.ProgressBar.Horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="6dp"
+                android:progressTint="@color/lego_red"
+                android:progressBackgroundTint="@color/lego_surface_card"
+                android:layout_marginTop="6dp"
+                android:max="100"
+                android:progress="60"
+                />
+        </LinearLayout>
+
+        <!-- Row 2 -->
+        <LinearLayout
+            android:id="@+id/rowStat2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:visibility="gone"
+            >
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                >
+                <TextView
+                    android:id="@+id/tvStatName2"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Icons"
+                    android:textColor="@color/white"
+                    android:textStyle="bold"
+                    />
+                <TextView
+                    android:id="@+id/tvStatCount2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="2 sets"
+                    android:textColor="@color/text_gray"
+                    />
+            </LinearLayout>
+            <ProgressBar
+                android:id="@+id/pbStat2"
+                style="@android:style/Widget.ProgressBar.Horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="6dp"
+                android:progressTint="@color/lego_yellow"
+                android:progressBackgroundTint="@color/lego_surface_card"
+                android:layout_marginTop="6dp"
+                android:max="100"
+                android:progress="40"
+                />
+        </LinearLayout>
+
+        <!-- Row 3 -->
+        <LinearLayout
+            android:id="@+id/rowStat3"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:visibility="gone"
+            >
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                >
+                <TextView
+                    android:id="@+id/tvStatName3"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Star Wars"
+                    android:textColor="@color/white"
+                    android:textStyle="bold"
+                    />
+                <TextView
+                    android:id="@+id/tvStatCount3"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="1 set"
+                    android:textColor="@color/text_gray"
+                    />
+            </LinearLayout>
+            <ProgressBar
+                android:id="@+id/pbStat3"
+                style="@android:style/Widget.ProgressBar.Horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="6dp"
+                android:progressTint="@color/white"
+                android:progressBackgroundTint="@color/lego_surface_card"
+                android:layout_marginTop="6dp"
+                android:max="100"
+                android:progress="20"
+                />
+        </LinearLayout>
+
+        <!-- No stats message -->
+        <TextView
+            android:id="@+id/tvNoStats"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="No hay suficientes datos de categorías."
+            android:textColor="@color/text_gray"
+            android:gravity="center"
+            android:layout_marginTop="10dp"
+            android:visibility="visible"
+            />
+
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/tvTituloLargestSet"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Mayor Desafío (Set más Grande)"
+        android:textSize="20sp"
         android:textStyle="bold"
-        />
-
-    <TextView
-        android:id="@+id/tvTotalPiezasInfo"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:layout_marginTop="24dp"
+        app:layout_constraintTop_toBottomOf="@id/layoutStats"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/tvTotalPiezas"
-        android:layout_marginStart="10dp"
-        android:text="@string/txtTvTotalPiezasInfo"
-        android:textSize="18sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:visibility="gone"
         />
 
-    <TextView
-        android:id="@+id/tvPiezas"
-        android:layout_width="wrap_content"
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/cardLargestSet"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:layout_constraintStart_toEndOf="@id/tvTotalPiezasInfo"
-        app:layout_constraintTop_toBottomOf="@id/tvTotalPiezas"
-        android:text="@string/txtTvPiezas"
-        android:textSize="18sp"
-        />
+        app:layout_constraintTop_toBottomOf="@id/tvTituloLargestSet"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginHorizontal="20dp"
+        android:layout_marginTop="12dp"
+        app:cardCornerRadius="16dp"
+        app:cardElevation="0dp"
+        app:cardBackgroundColor="@color/lego_surface_card"
+        app:strokeWidth="1dp"
+        app:strokeColor="@color/lego_card_stroke"
+        android:visibility="gone"
+        >
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:padding="12dp"
+            android:gravity="center_vertical"
+            >
+
+            <ImageView
+                android:id="@+id/ivLargestSetImg"
+                android:layout_width="70dp"
+                android:layout_height="70dp"
+                android:scaleType="centerCrop"
+                android:contentDescription="Imagen del set mas grande"
+                android:background="@color/lego_dark_bg"
+                android:padding="4dp"
+                />
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical"
+                android:layout_marginStart="16dp"
+                >
+
+                <TextView
+                    android:id="@+id/tvLargestSetName"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Nombre del Set"
+                    android:textColor="@color/white"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    android:maxLines="2"
+                    android:ellipsize="end"
+                    />
+
+                <TextView
+                    android:id="@+id/tvLargestSetPieces"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="0 piezas"
+                    android:textColor="@color/lego_yellow"
+                    android:textSize="14sp"
+                    android:layout_marginTop="4dp"
+                    />
+
+                <TextView
+                    android:id="@+id/tvLargestSetYear"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Año: 2021"
+                    android:textColor="@color/text_gray"
+                    android:textSize="12sp"
+                    android:layout_marginTop="2dp"
+                    />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+    </com.google.android.material.card.MaterialCardView>
 
     <Space
         android:id="@+id/space2"
         android:layout_width="match_parent"
         android:layout_height="24dp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/tvTotalPiezasInfo"
+        app:layout_constraintTop_toBottomOf="@id/cardLargestSet"
         app:layout_constraintEnd_toEndOf="parent"
         />
 

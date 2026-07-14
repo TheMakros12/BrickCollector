@@ -14,7 +14,8 @@ interface LegoApiServices {
     suspend fun getThemes(@Query("limit") limit: Int = 1000): ThemesApiResponse
 
     @GET("sets/")
-    suspend fun getSets(@Query("theme_id") themeId: Int,
+    suspend fun getSets(@Query("theme_id") themeId: String? = null,
+                               @Query("search") search: String? = null,
                                @Query("page_size") pageSize: Int = 60,
                                @Query("ordering") order: String = "-year,-set_num"): LegoApiResponse
 

@@ -10,13 +10,17 @@ import android.widget.Toast
 import androidx.lifecycle.lifecycleScope
 import com.example.brickcollector.R
 import com.example.brickcollector.data.Usuario
+import com.example.brickcollector.data.LegoResponse
+import com.example.brickcollector.data.CalculadoraPrecios
 import com.example.brickcollector.database.LegoApplication
+import coil.load
 import com.example.brickcollector.databinding.FragmentPerfilBinding
 import kotlinx.coroutines.launch
 
 class PerfilFragment : Fragment() {
 
-    private lateinit var binding: FragmentPerfilBinding
+    private var _binding: FragmentPerfilBinding? = null
+    private val binding get() = _binding!!
     private var usuario: Usuario? = null
 
     companion object {
@@ -40,8 +44,13 @@ class PerfilFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        binding = FragmentPerfilBinding.inflate(inflater, container, false)
+        _binding = FragmentPerfilBinding.inflate(inflater, container, false)
         return binding.root
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -64,17 +73,98 @@ class PerfilFragment : Fragment() {
         }
     }
 
+    private val localThemesMap = mapOf(
+        1 to "Technic",
+        601 to "Speed Champions",
+        721 to "Icons",
+        171 to "Star Wars",
+        769 to "Botanicals",
+        702 to "Marvel",
+        785 to "Nike",
+        781 to "The Infinity Saga",
+        776 to "Pokemon"
+    )
+
     private fun cargarTotales() {
         lifecycleScope.launch {
             try {
                 val totalSets = LegoApplication.database.legoDao().getTotalSets()
                 val totalPiezas = LegoApplication.database.legoDao().getTotalPieces()
+                val allLegos = LegoApplication.database.legoDao().getAllLegos()
 
                 binding.tvTotalSetsInfo.text =  totalSets.toString()
                 binding.tvTotalPiezasInfo.text = totalPiezas.toString()
 
+                // Calculate total collection value
+                val totalVal = allLegos.sumOf { CalculadoraPrecios.calcularPrecioDouble(it.num_parts) }
+                binding.tvValorVitrinaInfo.text = String.format("%.2f€", totalVal)
+
+                calcularEstadisticas(allLegos)
+                mostrarSetMasGrande(allLegos)
+
             } catch (e: Exception) {
                 Toast.makeText(requireContext(), "Error cargando totales", Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+
+    private fun mostrarSetMasGrande(sets: List<LegoResponse>) {
+        val largestSet = sets.maxByOrNull { it.num_parts }
+        if (largestSet != null) {
+            binding.tvTituloLargestSet.visibility = View.VISIBLE
+            binding.cardLargestSet.visibility = View.VISIBLE
+
+            binding.ivLargestSetImg.load(largestSet.set_img_url)
+            binding.tvLargestSetName.text = largestSet.name
+            binding.tvLargestSetPieces.text = "${largestSet.num_parts} piezas"
+            binding.tvLargestSetYear.text = "Año: ${largestSet.year}"
+        } else {
+            binding.tvTituloLargestSet.visibility = View.GONE
+            binding.cardLargestSet.visibility = View.GONE
+        }
+    }
+
+    private fun calcularEstadisticas(sets: List<LegoResponse>) {
+        if (sets.isEmpty()) {
+            binding.tvNoStats.visibility = View.VISIBLE
+            binding.rowStat1.visibility = View.GONE
+            binding.rowStat2.visibility = View.GONE
+            binding.rowStat3.visibility = View.GONE
+            return
+        }
+
+        binding.tvNoStats.visibility = View.GONE
+
+        // Group by theme_id and sort by count descending
+        val distribution = sets.groupBy { it.theme_id }
+            .map { (themeId, list) -> themeId to list.size }
+            .sortedByDescending { it.second }
+
+        val totalSets = sets.size
+
+        // Setup up to 3 rows
+        val rows = listOf(
+            Triple(binding.rowStat1, binding.tvStatName1, Pair(binding.tvStatCount1, binding.pbStat1)),
+            Triple(binding.rowStat2, binding.tvStatName2, Pair(binding.tvStatCount2, binding.pbStat2)),
+            Triple(binding.rowStat3, binding.tvStatName3, Pair(binding.tvStatCount3, binding.pbStat3))
+        )
+
+        for (i in 0 until 3) {
+            val (rowLayout, tvName, countProgress) = rows[i]
+            val (tvCount, pbStat) = countProgress
+
+            if (i < distribution.size) {
+                val (themeId, count) = distribution[i]
+                val name = localThemesMap[themeId] ?: "Tema ($themeId)"
+
+                rowLayout.visibility = View.VISIBLE
+                tvName.text = name
+                tvCount.text = if (count == 1) "1 set" else "$count sets"
+
+                val percentage = (count.toFloat() / totalSets.toFloat() * 100).toInt()
+                pbStat.progress = percentage
+            } else {
+                rowLayout.visibility = View.GONE
             }
         }
     }

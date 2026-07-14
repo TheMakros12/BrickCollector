@@ -76,57 +76,101 @@
         android:textSize="16sp"
         />
 
-    <TextView
-        android:id="@+id/tvAnyoSalida"
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:id="@+id/layoutMetaInfo"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintTop_toBottomOf="@id/tvNombreLego"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/tvNombreLego"
-        android:layout_marginTop="10dp"
-        android:text="@string/txtTvAnyoSalida"
-        android:textSize="16sp"
-        />
-
-    <TextView
-        android:id="@+id/tvAnyoSalidaInfo"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:layout_constraintStart_toEndOf="@id/tvAnyoSalida"
-        app:layout_constraintTop_toBottomOf="@id/tvNombreLego"
-        app:layout_constraintBottom_toTopOf="@id/btnPaginaWeb"
-        android:layout_marginTop="10dp"
-        android:layout_marginBottom="10dp"
-        android:text="@string/txtTvAnyoSalidaInfo"
-        android:textSize="16sp"
-        />
-
-    <TextView
-        android:id="@+id/tvPrecioEstimado"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:layout_constraintBottom_toTopOf="@id/btnPaginaWeb"
-        app:layout_constraintEnd_toStartOf="@id/tvPrecioEstimadoInfo"
-        android:layout_marginBottom="10dp"
-        android:text="@string/txtTvPrecioEstimado"
-        android:textSize="16sp"
-        />
-
-    <TextView
-        android:id="@+id/tvPrecioEstimadoInfo"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:layout_constraintBottom_toTopOf="@id/btnPaginaWeb"
         app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginBottom="10dp"
-        android:text="@string/txtTvPrecioEstimadoInfo"
-        android:textSize="16sp"
-        />
+        android:layout_marginTop="15dp"
+        android:layout_marginBottom="15dp"
+        android:weightSum="2"
+        android:divider="@drawable/divider_space"
+        android:showDividers="middle">
+
+        <!-- Card for Year -->
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            app:cardCornerRadius="12dp"
+            app:cardElevation="0dp"
+            app:cardBackgroundColor="@color/lego_surface_card"
+            app:strokeWidth="1dp"
+            app:strokeColor="@color/lego_card_stroke">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:gravity="center"
+                android:padding="12dp">
+
+                <TextView
+                    android:id="@+id/tvAnyoSalidaInfo"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="2021"
+                    android:textSize="20sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/white" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/txtTvAnyoSalida"
+                    android:textSize="12sp"
+                    android:textColor="@color/text_gray"
+                    android:layout_marginTop="4dp" />
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- Card for Price -->
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            app:cardCornerRadius="12dp"
+            app:cardElevation="0dp"
+            app:cardBackgroundColor="@color/lego_surface_card"
+            app:strokeWidth="1dp"
+            app:strokeColor="@color/lego_card_stroke">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:gravity="center"
+                android:padding="12dp">
+
+                <TextView
+                    android:id="@+id/tvPrecioEstimadoInfo"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="99.99€"
+                    android:textSize="20sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/lego_yellow" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/txtTvPrecioEstimado"
+                    android:textSize="12sp"
+                    android:textColor="@color/text_gray"
+                    android:layout_marginTop="4dp" />
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+    </LinearLayout>
 
     <Button
         android:id="@+id/btnPaginaWeb"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:layout_constraintTop_toBottomOf="@id/tvAnyoSalida"
+        app:layout_constraintTop_toBottomOf="@id/layoutMetaInfo"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

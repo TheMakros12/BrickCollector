@@ -15,6 +15,7 @@ import com.example.brickcollector.R
 import com.example.brickcollector.adapters.LegoAdapter
 import com.example.brickcollector.api.RetrofitInstance
 import com.example.brickcollector.data.LegoResponse
+import com.example.brickcollector.data.Theme
 import com.example.brickcollector.database.AppDatabase
 import com.example.brickcollector.database.LegoApplication
 import com.example.brickcollector.databinding.FragmentBuscarLegosBinding
@@ -22,7 +23,8 @@ import kotlinx.coroutines.launch
 
 class BuscarLegosFragment : Fragment() {
 
-    private lateinit var binding: FragmentBuscarLegosBinding
+    private var _binding: FragmentBuscarLegosBinding? = null
+    private val binding get() = _binding!!
     private lateinit var legoAdapter: LegoAdapter
     private val categorias = arrayOf("Technic", "Speed Champions", "Icons", "Star Wars", "Botanicals", "Marvel", "Nike", "The Infinity Saga", "Pokemon")
     private lateinit var themes: Map<Int, String>
@@ -54,8 +56,13 @@ class BuscarLegosFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        binding = FragmentBuscarLegosBinding.inflate(inflater, container, false)
+        _binding = FragmentBuscarLegosBinding.inflate(inflater, container, false)
         return binding.root
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -74,13 +81,18 @@ class BuscarLegosFragment : Fragment() {
             val input = binding.tiIdLego.text.toString().trim()
 
             if (input.isEmpty()) {
-                Toast.makeText(requireContext(), "Debes introducir un ID!!!", Toast.LENGTH_LONG).show()
+                Toast.makeText(requireContext(), "Introduce un ID o un nombre a buscar!!!", Toast.LENGTH_LONG).show()
                 return@setOnClickListener
             }
 
-            val idLego = if (input.contains("-")) input else "$input-1"
+            val isNumericId = input.matches(Regex("^[0-9]+(-[0-9]+)?$"))
 
-            buscarYGuardarSet(idLego)
+            if (isNumericId) {
+                val idLego = if (input.contains("-")) input else "$input-1"
+                buscarYGuardarSet(idLego)
+            } else {
+                buscarSetsPorNombre(input)
+            }
         }
     }
 
@@ -89,13 +101,30 @@ class BuscarLegosFragment : Fragment() {
             mutableListOf(),
             themes,
             onGuardarClick = { lego ->
-                guardarLego(lego)
+                guardarLego(lego, isWishlist = false)
+            },
+            onWishlistClick = { lego ->
+                guardarLego(lego, isWishlist = true)
             },
             onItemClick = { lego ->
                 mostrarDetalleLego(lego)
             })
 
         binding.recylerViewLegos.adapter = legoAdapter
+        actualizarListadoSavedState()
+    }
+
+    private fun actualizarListadoSavedState() {
+        lifecycleScope.launch {
+            try {
+                val savedNums = LegoApplication.database.legoDao().getSavedSetNums()
+                val wishlistNums = LegoApplication.database.legoDao().getWishlistSetNums()
+                legoAdapter.updateSavedSetNums(savedNums)
+                legoAdapter.updateWishlistSetNums(wishlistNums)
+            } catch (e: Exception) {
+                Log.e("BuscarLegosFragment", "Error actualizando estado de guardado", e)
+            }
+        }
     }
 
     private fun cargarSpinner() {
@@ -122,8 +151,9 @@ class BuscarLegosFragment : Fragment() {
 
         lifecycleScope.launch {
             try {
-                val response = RetrofitInstance.api.getSets(firstThemeId)
+                val response = getSetsConHijos(firstThemeId)
                 legoAdapter.setItems(response.results)
+                actualizarListadoSavedState()
             } catch (e: Exception) {
                 Toast.makeText(requireContext(), "Error cargando sets", Toast.LENGTH_SHORT).show()
             }
@@ -145,8 +175,9 @@ class BuscarLegosFragment : Fragment() {
 
                     lifecycleScope.launch {
                         try {
-                            val response = RetrofitInstance.api.getSets(themeId)
+                            val response = getSetsConHijos(themeId)
                             legoAdapter.setItems(response.results)
+                            actualizarListadoSavedState()
                         } catch (e: Exception) {
                             Toast.makeText(requireContext(), "Error en la API", Toast.LENGTH_SHORT).show()
                         }
@@ -157,14 +188,54 @@ class BuscarLegosFragment : Fragment() {
             }
     }
 
-    private fun guardarLego(legoResponse: LegoResponse) {
+    private suspend fun getSetsConHijos(themeId: Int): com.example.brickcollector.data.LegoApiResponse {
+        val dao = LegoApplication.database.legoDao()
+        val todosLosTemas = dao.getAllThemes()
+        val ids = if (todosLosTemas.isEmpty()) {
+            listOf(themeId)
+        } else {
+            obtenerIdsDescendientes(themeId, todosLosTemas)
+        }
+        val themeIdsString = ids.joinToString(",")
+        return RetrofitInstance.api.getSets(themeId = themeIdsString)
+    }
+
+    private fun obtenerIdsDescendientes(rootId: Int, todosLosTemas: List<Theme>): List<Int> {
+        val result = mutableListOf<Int>()
+        result.add(rootId)
+
+        fun buscarHijos(parentId: Int) {
+            val hijos = todosLosTemas.filter { it.parent_id == parentId }
+            for (hijo in hijos) {
+                result.add(hijo.id)
+                buscarHijos(hijo.id)
+            }
+        }
+
+        buscarHijos(rootId)
+        return result
+    }
+
+    private fun guardarLego(legoResponse: LegoResponse, isWishlist: Boolean) {
         lifecycleScope.launch {
             try {
-                val resultado = LegoApplication.database.legoDao().insertSet(legoResponse)
+                val price = obtenerPrecioOEstimado(legoResponse.set_num, legoResponse.num_parts)
+                val itemToSave = legoResponse.copy(isWishlist = isWishlist, retail_price = price)
+                val resultado = LegoApplication.database.legoDao().insertSet(itemToSave)
 
                 if (resultado > 0) {
-                    Toast.makeText(requireContext(), "Has guardado el Lego ${legoResponse.set_num.split("-")[0]}", Toast.LENGTH_SHORT).show()
+                    val typeText = if (isWishlist) "a tu lista de deseos" else "a tu colección"
+                    Toast.makeText(requireContext(), "Has añadido el Lego ${legoResponse.set_num.split("-")[0]} $typeText", Toast.LENGTH_SHORT).show()
+                    actualizarListadoSavedState()
                 } else {
+                    if (!isWishlist) {
+                        val updated = LegoApplication.database.legoDao().markAsOwned(legoResponse.set_num)
+                        if (updated > 0) {
+                            Toast.makeText(requireContext(), "Lego ${legoResponse.set_num.split("-")[0]} movido a colección", Toast.LENGTH_SHORT).show()
+                            actualizarListadoSavedState()
+                            return@launch
+                        }
+                    }
                     Toast.makeText(requireContext(), "Este Lego ya estaba guardado", Toast.LENGTH_SHORT).show()
                 }
             } catch (e: Exception) {
@@ -183,10 +254,13 @@ class BuscarLegosFragment : Fragment() {
         lifecycleScope.launch {
             try {
                 val lego = RetrofitInstance.api.getLegoById(idLego)
-                val resultado = LegoApplication.database.legoDao().insertSet(lego)
+                val price = obtenerPrecioOEstimado(lego.set_num, lego.num_parts)
+                val itemToSave = lego.copy(retail_price = price)
+                val resultado = LegoApplication.database.legoDao().insertSet(itemToSave)
 
                 if ( resultado > 0 ) {
                     Toast.makeText(requireContext(), "Set ${lego.set_num} guardado correctamente", Toast.LENGTH_SHORT).show()
+                    actualizarListadoSavedState()
                 }else {
                     Toast.makeText(requireContext(), "Este set ya estaba guardado", Toast.LENGTH_SHORT).show()
                 }
@@ -202,5 +276,45 @@ class BuscarLegosFragment : Fragment() {
                 Log.e("BuscarSet", "Error", e)
             }
         }
+    }
+
+    private fun buscarSetsPorNombre(query: String) {
+        lifecycleScope.launch {
+            try {
+                val response = RetrofitInstance.api.getSets(search = query)
+                if (response.results.isEmpty()) {
+                    Toast.makeText(requireContext(), "No se han encontrado sets para '$query'", Toast.LENGTH_SHORT).show()
+                } else {
+                    legoAdapter.setItems(response.results)
+                    actualizarListadoSavedState()
+                }
+            } catch (e: Exception) {
+                Toast.makeText(requireContext(), "Error buscando sets", Toast.LENGTH_SHORT).show()
+                Log.e("BuscarSets", "Error", e)
+            }
+        }
+    }
+
+    private suspend fun obtenerPrecioRealBrickset(setNum: String): Double? {
+        return try {
+            val paramsJson = "{\"setNumber\":\"$setNum\"}"
+            val response = RetrofitInstance.bricksetApi.getSets(
+                apiKey = RetrofitInstance.BRICKSET_API_KEY,
+                params = paramsJson
+            )
+            if (response.status == "success" && response.matches > 0) {
+                response.sets?.firstOrNull()?.LEGOCom?.DE?.retailPrice
+            } else {
+                null
+            }
+        } catch (e: Exception) {
+            Log.e("BricksetPrice", "Error fetching price from Brickset for $setNum", e)
+            null
+        }
+    }
+
+    private suspend fun obtenerPrecioOEstimado(setNum: String, numParts: Int): Double {
+        val realPrice = obtenerPrecioRealBrickset(setNum)
+        return realPrice ?: com.example.brickcollector.data.CalculadoraPrecios.calcularPrecioDouble(numParts)
     }
 }

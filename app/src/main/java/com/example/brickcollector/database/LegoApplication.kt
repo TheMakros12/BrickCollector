@@ -11,7 +11,9 @@ class LegoApplication : Application() {
 
     override fun onCreate() {
         super.onCreate()
-        database = Room.databaseBuilder(this, AppDatabase::class.java, "AppDatabase").build()
+        database = Room.databaseBuilder(this, AppDatabase::class.java, "AppDatabase")
+            .fallbackToDestructiveMigration()
+            .build()
     }
 
 }

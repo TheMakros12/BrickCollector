@@ -11,7 +11,8 @@ import com.example.brickcollector.databinding.FragmentWebBinding
 
 class WebFragment : Fragment() {
 
-    private lateinit var binding: FragmentWebBinding
+    private var _binding: FragmentWebBinding? = null
+    private val binding get() = _binding!!
 
     companion object {
         private const val ARG_URL = "url"
@@ -28,8 +29,13 @@ class WebFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        binding = FragmentWebBinding.inflate(inflater, container, false)
+        _binding = FragmentWebBinding.inflate(inflater, container, false)
         return binding.root
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

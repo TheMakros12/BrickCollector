@@ -11,10 +11,11 @@ import com.example.brickcollector.activities.NavigationWebListener
 import com.example.brickcollector.api.RetrofitInstance
 import com.example.brickcollector.data.CalculadoraPrecios
 import com.example.brickcollector.data.LegoResponse
+import com.example.brickcollector.database.LegoApplication
 import com.example.brickcollector.databinding.FragmentDetalleLegoBinding
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
-import com.squareup.picasso.Picasso
+import coil.load
 import kotlinx.coroutines.launch
 
 class DetalleLegoFragment : BottomSheetDialogFragment() {
@@ -67,7 +68,12 @@ class DetalleLegoFragment : BottomSheetDialogFragment() {
     private fun cargarDetalle(setNum: String) {
         lifecycleScope.launch {
             try {
-                val lego = RetrofitInstance.api.getLegoById(setNum)
+                var lego = LegoApplication.database.legoDao().getLegoByNum(setNum)
+                if (lego == null) {
+                    val apiLego = RetrofitInstance.api.getLegoById(setNum)
+                    val price = obtenerPrecioRealBrickset(setNum) ?: CalculadoraPrecios.calcularPrecioDouble(apiLego.num_parts)
+                    lego = apiLego.copy(retail_price = price)
+                }
                 bindLego(lego)
             } catch (e: Exception) {
                 Toast.makeText(requireContext(), "Error cargando detalle", Toast.LENGTH_SHORT).show()
@@ -84,12 +90,28 @@ class DetalleLegoFragment : BottomSheetDialogFragment() {
         binding.tvPiezasLego.text = "${lego.num_parts} pzs."
         binding.tvAnyoSalidaInfo.text = lego.year.toString()
 
-        val precio = CalculadoraPrecios.calcularPrecio(lego.num_parts)
-        binding.tvPrecioEstimadoInfo.text = precio
+        val price = lego.retail_price ?: CalculadoraPrecios.calcularPrecioDouble(lego.num_parts)
+        binding.tvPrecioEstimadoInfo.text = String.format("%.2f€", price)
 
-        Picasso.get()
-            .load(lego.set_img_url)
-            .into(binding.ivImgLego)
+        binding.ivImgLego.load(lego.set_img_url)
+    }
+
+    private suspend fun obtenerPrecioRealBrickset(setNum: String): Double? {
+        return try {
+            val paramsJson = "{\"setNumber\":\"$setNum\"}"
+            val response = RetrofitInstance.bricksetApi.getSets(
+                apiKey = RetrofitInstance.BRICKSET_API_KEY,
+                params = paramsJson
+            )
+            if (response.status == "success" && response.matches > 0) {
+                response.sets?.firstOrNull()?.LEGOCom?.DE?.retailPrice
+            } else {
+                null
+            }
+        } catch (e: Exception) {
+            Log.e("BricksetPrice", "Error fetching price from Brickset for $setNum", e)
+            null
+        }
     }
 
     private fun abrirWeb() {
